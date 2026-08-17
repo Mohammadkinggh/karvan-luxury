@@ -1,0 +1,20 @@
+name: KĀRVĀN Production Verification
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run E2E Test Suite
+        run: |
+          python3 tests/test_karvan_suite.py

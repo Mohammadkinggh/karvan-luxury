@@ -2,7 +2,7 @@
 """
 Automated E2E Test Suite for KĀRVĀN Luxury Persian Website
 Verifies HTML structure, JavaScript bundle integrity, DOM elements, Three.js canvas setup,
-manifest offline support, and GitHub Pages CDN reachability.
+PWA manifest, Service Worker offline support, and GitHub Pages CDN reachability.
 """
 import unittest
 import urllib.request
@@ -12,6 +12,8 @@ import os
 
 SITE_DIR = "/storage/emulated/0/HERMES/sites/karvan_website"
 HTML_PATH = os.path.join(SITE_DIR, "index.html")
+MANIFEST_PATH = os.path.join(SITE_DIR, "manifest.json")
+SW_PATH = os.path.join(SITE_DIR, "sw.js")
 GITHUB_PAGES_URL = "https://mohammadkinggh.github.io/karvan-luxury/"
 
 class TestKarvanWebsite(unittest.TestCase):
@@ -35,11 +37,19 @@ class TestKarvanWebsite(unittest.TestCase):
     def test_03_zero_external_blocking_scripts(self):
         with open(HTML_PATH, "r", encoding="utf-8") as f:
             content = f.read()
-        # Ensure external blocking script tags like cdn.tailwindcss.com or cdnjs.cloudflare.com are not present
         external_scripts = re.findall(r'<script\s+src="https://(cdn\.|cdnjs\.|unpkg\.)[^"]+"', content)
         self.assertEqual(len(external_scripts), 0, f"Found external blocking scripts that break in Iran: {external_scripts}")
 
-    def test_04_live_github_pages_reachability(self):
+    def test_04_pwa_manifest_and_sw_valid(self):
+        self.assertTrue(os.path.exists(MANIFEST_PATH), "manifest.json missing!")
+        self.assertTrue(os.path.exists(SW_PATH), "sw.js missing!")
+        with open(MANIFEST_PATH, "r", encoding="utf-8") as f:
+            manifest_data = json.load(f)
+        self.assertIn("name", manifest_data)
+        self.assertIn("short_name", manifest_data)
+        self.assertEqual(manifest_data["display"], "standalone")
+
+    def test_05_live_github_pages_reachability(self):
         try:
             req = urllib.request.Request(GITHUB_PAGES_URL, headers={"User-Agent": "KarvanTester/1.0"})
             with urllib.request.urlopen(req, timeout=15) as resp:
