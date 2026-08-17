@@ -19,8 +19,9 @@ import random
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
-DB_PATH = "/data/workspace/iranian_luxury/auth.db"
-PUBLIC_DIR = "/data/workspace/iranian_luxury/public"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "auth.db")
+PUBLIC_DIR = os.path.join(BASE_DIR, "public")
 SECRET_KEY = b"karvan_persian_royal_sovereign_secret_key_2026"
 ADMIN_EDIT_KEY = "karvan-edit-2026"
 ADMIN_EDIT_TARGET = os.path.join(PUBLIC_DIR, "index.html")
