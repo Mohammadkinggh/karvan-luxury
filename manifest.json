@@ -1,0 +1,16 @@
+{
+  "name": "KĀRVĀN Sovereign Luxury",
+  "short_name": "KĀRVĀN",
+  "description": "Exclusive Persian Royal Sovereign Vault, Curatorial Auctions & VIP AI Concierge",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#05070a",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "assets/img/hero-vault.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

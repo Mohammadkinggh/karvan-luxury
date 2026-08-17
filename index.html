@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KĀRVĀN | The Sovereign Persian Luxury Guild</title>
+  <title>KĀRVĀN // Sovereign Persian Luxury & Royal Vault</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#d4af37">
   
   <!-- Embedded SVG Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23050505' stroke='%23D4AF37' stroke-width='4'/><text x='50%' y='65%' font-size='50' text-anchor='middle' fill='%23D4AF37' font-family='serif'>ک</text></svg>">
@@ -754,7 +756,9 @@
     </div>
   </div>
 
-  <!-- Footer -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#d4af37">
+  <!-- Fonts -->
   <footer class="relative z-10 py-16 px-4 sm:px-8 lg:px-16 border-t border-white/10 bg-noir text-slate-400 text-xs overflow-hidden">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
       <div class="flex items-center gap-3">
@@ -1255,6 +1259,13 @@
 
     // Initial Auth State Update
     updateAuthState();
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW reg error:', err));
+      });
+    }
   </script>
 </body>
 </html>
