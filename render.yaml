@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: karvan-luxury-website
+    env: python
+    region: frankfurt
+    plan: free
+    buildCommand: ""
+    startCommand: python server.py
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 10000

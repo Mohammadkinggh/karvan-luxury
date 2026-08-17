@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="overflow-x-hidden">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KĀRVĀN | The Sovereign Persian Luxury Guild</title>
+  
+  <!-- Embedded SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23050505' stroke='%23D4AF37' stroke-width='4'/><text x='50%' y='65%' font-size='50' text-anchor='middle' fill='%23D4AF37' font-family='serif'>ک</text></svg>">
+
+  <!-- Fonts: Playfair Display, Cinzel Decorative, Plus Jakarta Sans, Vazirmatn (Farsi) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Vazirmatn:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Three.js for interactive dynamic 3D gold mesh particles background -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            noir: '#050505',
+            obsidian: '#0A0A0C',
+            surface: '#121216',
+            surfaceHover: '#1A1A22',
+            gold: {
+              300: '#FBE8A6',
+              400: '#F4D068',
+              500: '#D4AF37',
+              600: '#AA820A',
+              700: '#7B5E07',
+            },
+            saffron: '#FF7A00',
+            lapis: '#1B3B6F',
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            cinzel: ['Cinzel Decorative', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            farsi: ['Vazirmatn', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      scroll-behavior: smooth;
+      background-color: #050505;
+      color: #FAFAFA;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    
+    ::selection {
+      background: #D4AF37;
+      color: #050505;
+    }
+
+    .glass-panel {
+      background: rgba(18, 18, 22, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(212, 175, 55, 0.18);
+    }
+
+    .glass-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(212,175,55,0.02) 100%);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px -15px rgba(212, 175, 55, 0.15);
+    }
+
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FFF5D0 0%, #D4AF37 50%, #8A6D1C 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee-slow {
+      display: flex;
+      width: 200%;
+      animation: marquee 35s linear infinite;
+    }
+
+    .animate-spin-slow {
+      animation: spin 30s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    #cursor-glow {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      transition: width 0.3s, height 0.3s, opacity 0.3s;
+    }
+
+    /* RTL Support Classes */
+    [dir="rtl"] {
+      font-family: 'Vazirmatn', sans-serif;
+    }
+    [dir="rtl"] .font-serif {
+      font-family: 'Vazirmatn', sans-serif;
+      font-weight: 700;
+    }
+    [dir="rtl"] .font-cinzel {
+      font-family: 'Vazirmatn', sans-serif;
+      font-weight: 800;
+    }
+
+    /* Chat bubble animations */
+    @keyframes pulse-subtle {
+      0%, 100% { box-shadow: 0 0 15px rgba(212,175,55,0.3); }
+      50% { box-shadow: 0 0 30px rgba(212,175,55,0.6); }
+    }
+    .concierge-pulse {
+      animation: pulse-subtle 3s infinite;
+    }
+  </style>
+</head>
+<body class="bg-noir text-slate-100 font-sans selection:bg-gold-500 selection:text-noir relative min-h-screen">
+
+  <!-- Dynamic 3D Astrolabe Particles background -->
+  <div id="canvas-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+  <div id="cursor-glow"></div>
+
+  <!-- Announcement Ticker -->
+  <div class="relative z-50 bg-gradient-to-r from-noir via-gold-950/40 to-noir border-b border-gold-500/20 py-2 px-4 text-center text-xs tracking-widest uppercase font-medium text-gold-300">
+    <span class="inline-flex items-center gap-2 flex-wrap justify-center">
+      <span class="w-1.5 h-1.5 rounded-full bg-gold-400 animate-ping"></span>
+      <span data-i18n="announcement">Exclusive Autumn Gala • Geneva • Private Members Only</span>
+      <a href="#pricing" class="underline ml-2 hover:text-white transition-colors" data-i18n="announcement_cta">View Plans &rarr;</a>
+    </span>
+  </div>
+
+  <!-- Main Navigation -->
+  <nav class="sticky top-0 z-50 glass-panel border-b border-gold-500/10 px-4 sm:px-8 lg:px-16 py-4 flex items-center justify-between transition-all duration-300 w-full max-w-full">
+    <div class="flex items-center gap-4">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-full border border-gold-500/40 flex items-center justify-center bg-noir/80 group-hover:border-gold-400 transition-all duration-500 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+          <span class="font-cinzel text-gold-400 text-lg font-black tracking-tighter">ک</span>
+        </div>
+        <div>
+          <span class="font-cinzel text-lg sm:text-xl tracking-[0.25em] font-bold text-white block">KĀRVĀN</span>
+          <span class="font-farsi text-[10px] text-gold-400/80 block -mt-1 font-light" data-i18n="sub_brand">شبکه نخبگان و اصالت پارسی</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="hidden lg:flex items-center gap-8 text-xs uppercase tracking-[0.2em] font-medium text-slate-300">
+      <a href="#market" class="hover:text-gold-400 transition-colors" data-i18n="nav_market">Live Market</a>
+      <a href="#vision" class="hover:text-gold-400 transition-colors" data-i18n="nav_heritage">Heritage</a>
+      <a href="#circles" class="hover:text-gold-400 transition-colors" data-i18n="nav_circles">Private Circles</a>
+      <a href="#pricing" class="hover:text-gold-400 transition-colors" data-i18n="nav_pricing">Pricing</a>
+      <a href="#concierge-section" class="hover:text-gold-400 transition-colors" data-i18n="nav_concierge">Concierge Desk</a>
+      <a href="#contact" class="hover:text-gold-400 transition-colors" data-i18n="nav_contact">Contact Us</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Currency Switcher Dropdown (NEW) -->
+      <div class="relative">
+        <select id="currency-select" onchange="changeCurrency(this.value)" class="bg-surface border border-gold-500/20 rounded-lg px-2 py-1 text-gold-400 text-xs font-bold uppercase focus:outline-none focus:border-gold-400 cursor-pointer">
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="AED">AED (د.إ)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="XAU">XAU (Gold oz)</option>
+        </select>
+      </div>
+
+      <!-- Lang Toggle -->
+      <button id="lang-toggle-btn" class="px-3 py-1.5 rounded border border-gold-500/20 text-gold-400 text-xs font-bold uppercase hover:bg-gold-500/10 transition-colors">
+        FA
+      </button>
+
+      <!-- Auth State Actions -->
+      <div id="nav-auth-section" class="flex items-center gap-3">
+        <button onclick="openAuthModal('login')" class="text-xs uppercase tracking-widest text-slate-300 hover:text-white px-3 py-2 font-medium">
+          Login
+        </button>
+        <button onclick="openAuthModal('register')" class="relative group px-4 py-2 rounded-full overflow-hidden text-xs uppercase tracking-widest font-semibold text-noir bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all duration-300">
+          <span class="relative z-10">Register</span>
+        </button>
+      </div>
+      <div id="nav-user-section" class="hidden flex items-center gap-3">
+        <button onclick="openDashboard()" class="text-xs uppercase tracking-widest text-gold-400 hover:text-gold-300 font-semibold flex items-center gap-2">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span id="nav-username">Dashboard</span>
+        </button>
+        <button onclick="handleLogout()" class="text-xs uppercase tracking-widest text-slate-400 hover:text-white px-3 py-1.5 border border-white/10 rounded">
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-[80vh] flex items-center justify-center px-4 sm:px-8 lg:px-16 pt-12 pb-20 z-10 w-full overflow-hidden">
+    <div class="max-w-5xl mx-auto text-center">
+      <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-gold-500/30 bg-gold-500/5 backdrop-blur-md mb-8">
+        <i data-lucide="crown" class="w-4 h-4 text-gold-400"></i>
+        <span class="text-xs uppercase tracking-[0.3em] text-gold-300 font-semibold" data-i18n="hero_badge">The Sovereign Persian Guild</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-serif font-black tracking-tight text-white mb-8 leading-[1.15]" data-i18n="hero_title">
+        Where Millennia of Splendor Converge.
+      </h1>
+
+      <p class="text-base sm:text-lg lg:text-xl text-slate-400 font-light max-w-3xl mx-auto mb-12 leading-relaxed" data-i18n="hero_desc">
+        A borderless, invite-only sanctuary uniting the global Persian elite, titans of industry, royal stewards, and masters of civilization.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
+        <button onclick="openAuthModal('register')" class="w-full sm:w-auto px-8 py-4 rounded-full font-sans font-bold text-xs uppercase tracking-[0.25em] text-noir bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 hover:shadow-[0_0_35px_rgba(212,175,55,0.5)] transition-all duration-300 transform hover:-translate-y-0.5">
+          <span data-i18n="hero_cta_primary">Petition for Admission</span>
+        </button>
+        <button onclick="toggleConciergeDrawer()" class="w-full sm:w-auto px-8 py-4 rounded-full font-sans font-semibold text-xs uppercase tracking-[0.25em] text-gold-300 border border-gold-500/30 hover:border-gold-400 hover:bg-gold-500/10 transition-all duration-300 backdrop-blur-sm flex items-center justify-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-gold-400"></i>
+          <span data-i18n="hero_cta_concierge">Speak with Concierge</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE COMMODITIES & SOVEREIGN ASSETS TICKER SECTION (NEW) -->
+  <section id="market" class="relative z-10 py-10 px-4 sm:px-8 lg:px-16 border-y border-gold-500/15 bg-obsidian/80 backdrop-blur-lg">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></div>
+          <span class="text-xs uppercase tracking-[0.25em] font-bold text-gold-400">Live Persian Sovereign Asset Index</span>
+          <span class="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Spot Real-Time</span>
+        </div>
+        <div class="text-xs text-slate-400 font-mono flex items-center gap-2">
+          <span>Guild Volume (24h):</span>
+          <span id="guild-volume-display" class="text-gold-300 font-bold">$42.8M USD</span>
+        </div>
+      </div>
+
+      <!-- Ticker Cards Grid -->
+      <div id="market-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Will be dynamically populated by JS from /api/market/stats -->
+        <div class="p-4 rounded-2xl bg-surface/60 border border-white/5 animate-pulse">
+          <div class="h-4 bg-white/10 rounded w-1/2 mb-2"></div>
+          <div class="h-6 bg-gold-400/20 rounded w-3/4"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Grid -->
+  <section id="stats-section" class="relative py-16 px-4 sm:px-8 lg:px-16 z-10 border-b border-white/5 bg-noir">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div class="p-6 rounded-2xl glass-card">
+        <div class="text-3xl sm:text-4xl lg:text-5xl font-serif font-black text-gold-400 mb-2" data-target="14.2" data-suffix="B+">$0.0B+</div>
+        <div class="text-xs uppercase tracking-[0.2em] text-slate-400" data-i18n="stat_1">Syndicated Assets</div>
+      </div>
+      <div class="p-6 rounded-2xl glass-card">
+        <div class="text-3xl sm:text-4xl lg:text-5xl font-serif font-black text-gold-400 mb-2" data-target="380" data-suffix="">0</div>
+        <div class="text-xs uppercase tracking-[0.2em] text-slate-400" data-i18n="stat_2">Sovereign Fellows</div>
+      </div>
+      <div class="p-6 rounded-2xl glass-card">
+        <div class="text-3xl sm:text-4xl lg:text-5xl font-serif font-black text-gold-400 mb-2" data-target="18" data-suffix="">0</div>
+        <div class="text-xs uppercase tracking-[0.2em] text-slate-400" data-i18n="stat_3">Global Hubs</div>
+      </div>
+      <div class="p-6 rounded-2xl glass-card">
+        <div class="text-3xl sm:text-4xl lg:text-5xl font-serif font-black text-gold-400 mb-2" data-target="2500" data-suffix=" Yrs">0 Yrs</div>
+        <div class="text-xs uppercase tracking-[0.2em] text-slate-400" data-i18n="stat_4">Imperial Lineage</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Plans Section -->
+  <section id="pricing" class="relative py-28 px-4 sm:px-8 lg:px-16 z-10 bg-obsidian/60 border-t border-white/5 overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-20">
+        <div class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-gold-400 font-semibold mb-3">
+          <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+          <span>The Guild Allocations</span>
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-serif font-bold text-white mb-6">
+          Sovereign <span class="gold-gradient-text">Guild Tiers</span>
+        </h2>
+        <p class="text-slate-400 font-light text-base">
+          Our three-tier allocation plans unlock the inner sanctum, deal syndicates, and custom 24/7 dispatch capabilities.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        
+        <!-- Tier 1: Fellow Candidate -->
+        <div class="p-8 rounded-3xl glass-card flex flex-col justify-between group hover:border-gold-500/50 relative">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-slate-400 mb-2 font-semibold">Tier I</div>
+            <h3 class="text-3xl font-serif font-bold text-white mb-4">Fellow Candidate</h3>
+            <p class="text-slate-400 text-sm font-light leading-relaxed mb-6">
+              For distinguished visionaries and rising founders initiating their private network access.
+            </p>
+            <div id="price-tier-1" class="text-4xl font-serif font-bold text-gold-400 mb-8">$5,000<span class="text-xs text-slate-400 tracking-widest uppercase font-sans"> / year</span></div>
+          </div>
+          <div>
+            <ul class="space-y-3.5 text-xs text-slate-300 mb-8 pt-6 border-t border-white/5">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Local Chapter Event Invitations</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Global Directory Member Registry</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Core Syndicate Pitch Previews</li>
+            </ul>
+            <button onclick="checkoutTier('Fellow Candidate', 5000)" class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest border border-white/10 transition-colors">
+              Acquire Tier
+            </button>
+          </div>
+        </div>
+
+        <!-- Tier 2: Sovereign Patron (Recommended) -->
+        <div class="p-8 rounded-3xl glass-card border-gold-500/30 flex flex-col justify-between group hover:border-gold-500/80 relative shadow-[0_0_40px_rgba(212,175,55,0.1)]">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gold-500 text-noir text-[9px] uppercase tracking-widest font-black">
+            Most Selected
+          </div>
+          <div>
+            <div class="text-xs uppercase tracking-widest text-gold-400 mb-2 font-semibold">Tier II</div>
+            <h3 class="text-3xl font-serif font-bold text-white mb-4">Sovereign Patron</h3>
+            <p class="text-slate-400 text-sm font-light leading-relaxed mb-6">
+              Full private investment syndicate privileges, custom asset advisory, and priority global summit invites.
+            </p>
+            <div id="price-tier-2" class="text-4xl font-serif font-bold text-gold-400 mb-8">$15,000<span class="text-xs text-slate-400 tracking-widest uppercase font-sans"> / year</span></div>
+          </div>
+          <div>
+            <ul class="space-y-3.5 text-xs text-slate-300 mb-8 pt-6 border-t border-white/5">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Direct Dealflow Co-GP Allocations</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Priority Gala Invitations (St. Moritz)</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Fine Arts Antiquities Curation Desk</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Full 24/7 Concierge Support</li>
+            </ul>
+            <button onclick="checkoutTier('Sovereign Patron', 15000)" class="w-full py-3 rounded-xl bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 text-noir font-bold text-xs uppercase tracking-widest transition-transform duration-300 group-hover:scale-105 shadow-lg shadow-gold-500/20">
+              Acquire Tier
+            </button>
+          </div>
+        </div>
+
+        <!-- Tier 3: Royal Custodian -->
+        <div class="p-8 rounded-3xl glass-card flex flex-col justify-between group hover:border-gold-500/50 relative">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-slate-400 mb-2 font-semibold">Tier III</div>
+            <h3 class="text-3xl font-serif font-bold text-white mb-4">Royal Custodian</h3>
+            <p class="text-slate-400 text-sm font-light leading-relaxed mb-6">
+              The supreme inner chamber. Bespoke sovereign protection, active political/diplomatic forums, and full family-office administration.
+            </p>
+            <div id="price-tier-3" class="text-4xl font-serif font-bold text-gold-400 mb-8">$50,000<span class="text-xs text-slate-400 tracking-widest uppercase font-sans"> / year</span></div>
+          </div>
+          <div>
+            <ul class="space-y-3.5 text-xs text-slate-300 mb-8 pt-6 border-t border-white/5">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> All-access Private Aviation Dispatch</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Unrestricted Board of Stewards seat</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Diplomatic Passport & Trust Vetting</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-gold-400"></i> Full Executive Protection Escort</li>
+            </ul>
+            <button onclick="checkoutTier('Royal Custodian', 50000)" class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest border border-white/10 transition-colors">
+              Acquire Tier
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Private Circles -->
+  <section id="circles" class="relative py-28 px-4 sm:px-8 lg:px-16 z-10 overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-20">
+        <div class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-gold-400 font-semibold mb-3">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>Exclusive Guild Domains</span>
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-serif font-bold text-white mb-6">
+          The Five <span class="gold-gradient-text">Sanctuaries</span>
+        </h2>
+        <p class="text-slate-400 font-light text-base">
+          Curated chambers built to safeguard Persian heritage, accelerate multi-generational wealth, and empower sovereign leadership.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Sanctuary 1 -->
+        <div class="p-8 rounded-3xl glass-card group">
+          <div class="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <i data-lucide="plane" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-serif font-bold text-white mb-3">Sovereign Aviation</h3>
+          <p class="text-slate-400 text-sm font-light leading-relaxed">
+            Direct charter access on private Bombardier Global 7500 & Gulfstream G700 aircraft connecting Tehran, Dubai, London, and Geneva with VIP diplomatic ramp clearance.
+          </p>
+        </div>
+
+        <!-- Sanctuary 2 -->
+        <div class="p-8 rounded-3xl glass-card group">
+          <div class="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <i data-lucide="gem" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-serif font-bold text-white mb-3">Imperial Antiquities</h3>
+          <p class="text-slate-400 text-sm font-light leading-relaxed">
+            Private curatorial auctions for Safavid silk masterworks, Achaemenid gold rhytons, and Neyshabur royal turquoise with verifiable museum-grade provenance.
+          </p>
+        </div>
+
+        <!-- Sanctuary 3 -->
+        <div class="p-8 rounded-3xl glass-card group">
+          <div class="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <i data-lucide="trending-up" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-serif font-bold text-white mb-3">Syndicate Capital</h3>
+          <p class="text-slate-400 text-sm font-light leading-relaxed">
+            Co-investment privileges across artificial intelligence, critical energy corridors, deep-tech infrastructure, and sovereign wealth arbitrage.
+          </p>
+        </div>
+
+        <!-- Sanctuary 4 -->
+        <div class="p-8 rounded-3xl glass-card group">
+          <div class="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-serif font-bold text-white mb-3">Diplomatic Immunity & Protection</h3>
+          <p class="text-slate-400 text-sm font-light leading-relaxed">
+            Multi-jurisdiction residency solutions, secure encrypted satellite communications, and elite close-protection teams globally.
+          </p>
+        </div>
+
+        <!-- Sanctuary 5 -->
+        <div class="p-8 rounded-3xl glass-card group">
+          <div class="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <i data-lucide="wine" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-serif font-bold text-white mb-3">Ceremonial Galas</h3>
+          <p class="text-slate-400 text-sm font-light leading-relaxed">
+            Biannual private galas at Persepolis, St. Moritz, and the Palace of Versailles celebrating Persian poetry, philosophy, and classical music.
+          </p>
+        </div>
+
+        <!-- Sanctuary 6: Concierge Highlight -->
+        <div class="p-8 rounded-3xl glass-card group border-gold-500/30">
+          <div class="w-14 h-14 rounded-2xl bg-gold-500/20 border border-gold-500/40 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+            <i data-lucide="bot" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-serif font-bold text-gold-400 mb-3">Anahita Concierge AI</h3>
+          <p class="text-slate-400 text-sm font-light leading-relaxed mb-4">
+            Instantaneous, secure AI intelligence tailored for Persian sovereign patrons with bilingual English & Farsi protocol.
+          </p>
+          <button onclick="toggleConciergeDrawer()" class="text-xs uppercase tracking-widest text-gold-300 font-bold hover:underline flex items-center gap-1">
+            Open Interactive Desk &rarr;
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Concierge Desk Section (Embedded Preview) -->
+  <section id="concierge-section" class="relative py-20 px-4 sm:px-8 lg:px-16 z-10 bg-noir border-t border-white/5">
+    <div class="max-w-5xl mx-auto">
+      <div class="p-8 sm:p-12 rounded-3xl glass-panel border border-gold-500/30 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div>
+          <div class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-gold-400 font-bold mb-3">
+            <i data-lucide="shield" class="w-4 h-4"></i>
+            <span>Diplomatic Intelligence</span>
+          </div>
+          <h3 class="text-2xl sm:text-4xl font-serif font-bold text-white mb-4">
+            Meet <span class="gold-gradient-text">Anahita</span>, Royal Concierge
+          </h3>
+          <p class="text-slate-400 text-sm font-light leading-relaxed max-w-xl">
+            Inquire about flight clearances, Safavid auction estimates, Persepolis Gala RSVP status, or commodity vault allocations in real-time.
+          </p>
+        </div>
+        <button onclick="toggleConciergeDrawer()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 text-noir font-bold text-xs uppercase tracking-[0.2em] shadow-lg shadow-gold-500/20 hover:scale-105 transition-all duration-300 flex items-center gap-3">
+          <i data-lucide="message-square" class="w-4 h-4"></i>
+          <span>Launch AI Dispatch</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="relative py-28 px-4 sm:px-8 lg:px-16 z-10 border-t border-white/5 bg-obsidian/70">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-gold-400 font-semibold mb-3">
+        <i data-lucide="mail" class="w-4 h-4"></i>
+        <span>Diplomatic Relations</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-serif font-bold text-white mb-6">
+        Initiate Sovereign <span class="gold-gradient-text">Inquiry</span>
+      </h2>
+      <p class="text-slate-400 font-light text-base mb-12">
+        Submissions are vetted strictly by the 5-Council Board of Stewards in Geneva.
+      </p>
+
+      <form id="inquiry-form" onsubmit="handleInquirySubmit(event)" class="max-w-xl mx-auto space-y-4 text-left">
+        <div>
+          <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1.5 font-semibold">Full Name / House</label>
+          <input type="text" required placeholder="e.g. Dr. Kiarostami" class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
+        </div>
+        <div>
+          <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1.5 font-semibold">Direct Email Address</label>
+          <input type="email" required placeholder="sovereign@familyoffice.ch" class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
+        </div>
+        <div>
+          <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1.5 font-semibold">Confidential Dispatch</label>
+          <textarea rows="4" required placeholder="Specify your syndicate, fine arts, or private aviation inquiry..." class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none"></textarea>
+        </div>
+        <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 text-noir font-bold text-xs uppercase tracking-[0.2em] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all">
+          Transmit Encrypted Dispatch
+        </button>
+      </form>
+      <div id="inquiry-success" class="hidden p-6 rounded-2xl bg-gold-500/10 border border-gold-500/30 text-gold-300 text-sm max-w-xl mx-auto mt-4">
+        ✓ Dispatch Received. The High Chancellor will respond via secure courier within 24 hours.
+      </div>
+    </div>
+  </section>
+
+  <!-- FLOATING INTERACTIVE AI CONCIERGE WIDGET (NEW) -->
+  <div class="fixed bottom-6 right-6 z-50">
+    <!-- Floating Trigger Button -->
+    <button id="concierge-trigger-btn" onclick="toggleConciergeDrawer()" class="w-14 h-14 rounded-full bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 text-noir shadow-2xl flex items-center justify-center concierge-pulse hover:scale-110 transition-transform duration-300 group">
+      <i data-lucide="bot" class="w-7 h-7"></i>
+      <span class="absolute -top-2 -left-2 px-2 py-0.5 rounded-full bg-noir border border-gold-400 text-[9px] font-bold text-gold-300 tracking-wider">AI</span>
+    </button>
+
+    <!-- Expandable Concierge Chat Drawer -->
+    <div id="concierge-drawer" class="hidden fixed bottom-24 right-4 sm:right-6 w-[92vw] sm:w-[420px] h-[550px] max-h-[85vh] rounded-3xl glass-panel border border-gold-500/40 shadow-[0_25px_60px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden transition-all duration-300">
+      
+      <!-- Drawer Header -->
+      <div class="p-4 bg-noir/90 border-b border-gold-500/20 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center text-gold-400">
+            <span class="font-cinzel font-bold text-sm">آ</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>Anahita • Diplomatic Concierge</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            </div>
+            <div class="text-[10px] text-gold-400/80 font-mono">Bilingual Persian VIP Protocol</div>
+          </div>
+        </div>
+        <button onclick="toggleConciergeDrawer()" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="p-2.5 bg-noir/40 border-b border-white/5 flex items-center gap-2 overflow-x-auto text-[10px] whitespace-nowrap">
+        <button onclick="sendQuickPrompt('Book private jet to Dubai')" class="px-2.5 py-1 rounded-full bg-surface border border-gold-500/20 text-gold-300 hover:bg-gold-500/10">
+          🛩️ Charter Jet
+        </button>
+        <button onclick="sendQuickPrompt('Safavid Silk Rug Auction Details')" class="px-2.5 py-1 rounded-full bg-surface border border-gold-500/20 text-gold-300 hover:bg-gold-500/10">
+          🏛️ Silk Rugs
+        </button>
+        <button onclick="sendQuickPrompt('Persepolis Gala RSVP')" class="px-2.5 py-1 rounded-full bg-surface border border-gold-500/20 text-gold-300 hover:bg-gold-500/10">
+          👑 Gala RSVP
+        </button>
+        <button onclick="sendQuickPrompt('Saffron & Caviar Spot Prices')" class="px-2.5 py-1 rounded-full bg-surface border border-gold-500/20 text-gold-300 hover:bg-gold-500/10">
+          📊 Spot Prices
+        </button>
+      </div>
+
+      <!-- Chat Messages Area -->
+      <div id="concierge-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs leading-relaxed">
+        <div class="flex items-start gap-2.5">
+          <div class="w-6 h-6 rounded-full bg-gold-500/20 flex-shrink-0 flex items-center justify-center text-gold-400 font-bold text-[10px]">
+            آ
+          </div>
+          <div class="p-3 rounded-2xl rounded-tl-none bg-surface border border-gold-500/20 text-slate-200">
+            درود بر شما بزرگوار. Welcome to KĀRVĀN. How may the Diplomatic Concierge assist your private aviation, sovereign asset, or heritage inquiries today?
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Form -->
+      <form id="concierge-input-form" onsubmit="handleConciergeSend(event)" class="p-3 bg-noir/90 border-t border-gold-500/20 flex items-center gap-2">
+        <input id="concierge-input" type="text" placeholder="Type your diplomatic inquiry..." class="flex-1 px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none">
+        <button type="submit" class="p-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-noir font-bold hover:scale-105 transition-transform">
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION MODAL (Login / Register) -->
+  <div id="auth-modal" class="fixed inset-0 z-50 bg-noir/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="modal-content w-full max-w-md p-8 rounded-3xl glass-panel border border-gold-500/40 relative shadow-[0_0_50px_rgba(212,175,55,0.15)] transform transition-all duration-300 scale-95 opacity-0">
+      <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-full border border-gold-500/40 flex items-center justify-center mx-auto mb-3 bg-noir shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+          <span class="font-cinzel text-gold-400 text-xl font-bold">ک</span>
+        </div>
+        <h3 id="auth-modal-title" class="text-2xl font-serif font-bold text-white">Sovereign Portal</h3>
+        <p id="auth-modal-desc" class="text-xs text-slate-400 mt-1">Authenticate credentials to enter the private guild sanctum.</p>
+      </div>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4 text-left">
+        <div id="auth-name-field" class="hidden">
+          <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">Full Sovereign Name</label>
+          <input id="auth-name" type="text" placeholder="e.g. Dariush Rostami" class="w-full px-4 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none">
+        </div>
+        <div>
+          <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">Private Email</label>
+          <input id="auth-email" type="email" required placeholder="cyrus@karvan.luxury" class="w-full px-4 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none">
+        </div>
+        <div>
+          <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">Passphrase</label>
+          <input id="auth-password" type="password" required placeholder="••••••••••••" class="w-full px-4 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none">
+        </div>
+        
+        <div id="auth-error-msg" class="hidden text-xs text-red-400 p-3 rounded-lg bg-red-500/10 border border-red-500/20"></div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 text-noir font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all">
+          Authorize Entry
+        </button>
+      </form>
+
+      <div class="mt-6 text-center text-xs text-slate-400">
+        <span id="auth-switch-text">New to the Guild?</span>
+        <button id="auth-switch-btn" onclick="switchAuthMode()" class="text-gold-400 font-bold ml-1 hover:underline">
+          Petition for Registry
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT / TIER ACQUISITION MODAL -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 bg-noir/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="modal-content w-full max-w-lg p-8 rounded-3xl glass-panel border border-gold-500/40 relative shadow-[0_0_50px_rgba(212,175,55,0.2)] transform transition-all duration-300 scale-95 opacity-0">
+      <button onclick="closeCheckoutModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <span class="text-[10px] uppercase tracking-widest text-gold-400 font-bold block mb-1">Encrypted Capital Transfer</span>
+        <h3 id="checkout-tier-title" class="text-2xl font-serif font-bold text-white">Sovereign Patron Allocation</h3>
+        <div id="checkout-tier-price" class="text-3xl font-serif font-black text-gold-400 mt-2">$15,000 / year</div>
+      </div>
+
+      <form id="checkout-form" onsubmit="handlePaymentSubmit(event)" class="space-y-4">
+        <div>
+          <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">Cardholder / Beneficiary</label>
+          <input type="text" required placeholder="Cyrus Pahlavi" class="w-full px-4 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none">
+        </div>
+        <div>
+          <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">Sovereign Black Card / IBAN</label>
+          <input type="text" required placeholder="4000 •••• •••• 2026" class="w-full px-4 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none font-mono">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">Expiry</label>
+            <input type="text" required placeholder="12/28" class="w-full px-4 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none font-mono">
+          </div>
+          <div>
+            <label class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">CVC Code</label>
+            <input type="password" required placeholder="•••" class="w-full px-4 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-gold-400 focus:outline-none font-mono">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-4 mt-4 rounded-xl bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 text-noir font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all">
+          Transmit Safe Payment
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PRIVATE MEMBER DASHBOARD MODAL WINDOW -->
+  <div id="dashboard-modal" class="fixed inset-0 z-[100] bg-noir/95 backdrop-blur-xl hidden flex items-stretch justify-end">
+    <div class="w-full max-w-2xl bg-surface border-l border-gold-500/20 p-6 sm:p-10 overflow-y-auto flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-6 border-b border-white/10 mb-8">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full border border-gold-500/40 flex items-center justify-center bg-noir">
+              <span class="font-cinzel text-gold-400 text-lg font-bold">ک</span>
+            </div>
+            <div>
+              <h3 id="dash-user-name" class="text-xl font-serif font-bold text-white">Sovereign Patron</h3>
+              <span id="dash-user-tier" class="text-[10px] uppercase tracking-widest text-gold-400 font-semibold px-2 py-0.5 rounded bg-gold-500/10 border border-gold-500/20">
+                Royal Custodian
+              </span>
+            </div>
+          </div>
+          <button onclick="closeDashboard()" class="text-slate-400 hover:text-white p-2">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+
+        <!-- Dashboard Widgets -->
+        <div class="space-y-6">
+          <div class="p-6 rounded-2xl bg-noir/60 border border-gold-500/20">
+            <div class="text-xs uppercase tracking-widest text-slate-400 mb-1">Syndicated Guild Portfolio</div>
+            <div class="text-3xl font-serif font-bold text-white mb-4">$14,250,000 <span class="text-xs text-emerald-400 font-mono">+18.4% (YTD)</span></div>
+            <div class="grid grid-cols-2 gap-3 text-xs text-slate-300">
+              <div class="p-3 rounded-xl bg-surface border border-white/5">
+                <span class="text-[10px] text-slate-500 block">Safavid Silk Rug Index</span>
+                <span class="font-bold text-gold-400">$3.8M Allocated</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface border border-white/5">
+                <span class="text-[10px] text-slate-500 block">Saffron Bullion Vault</span>
+                <span class="font-bold text-gold-400">1,200 kg Locked</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sovereign Patrons Directory (NEW) -->
+          <div class="p-6 rounded-2xl bg-noir/60 border border-white/5">
+            <div class="text-xs uppercase tracking-widest text-gold-400 font-semibold mb-3 flex items-center justify-between">
+              <span>Verified Stewards Directory</span>
+              <span class="text-[10px] text-slate-500">Live Consensus</span>
+            </div>
+            <div id="members-directory-list" class="space-y-2.5">
+              <!-- Dynamically populated from /api/members/directory -->
+              <div class="text-xs text-slate-400">Loading verified stewards...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-white/10 flex justify-between items-center w-full">
+        <span class="text-[10px] text-slate-500 font-serif">Encrypted PGP Session: VERIFIED</span>
+        <button onclick="handleLogout()" class="px-4 py-2 rounded-lg border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/10 transition-colors">
+          Logout Secure Session
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="relative z-10 py-16 px-4 sm:px-8 lg:px-16 border-t border-white/10 bg-noir text-slate-400 text-xs overflow-hidden">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full border border-gold-500/40 flex items-center justify-center bg-surface">
+          <span class="font-cinzel text-gold-400 text-sm font-black">ک</span>
+        </div>
+        <span class="font-cinzel text-sm tracking-[0.2em] font-bold text-white">KĀRVĀN</span>
+        <span class="text-slate-600">|</span>
+        <span class="font-farsi text-xs text-gold-400/80">اصالت، افتخار و شکوه پارسی</span>
+      </div>
+
+      <div class="flex items-center gap-6 text-[11px] uppercase tracking-widest flex-wrap justify-center">
+        <a href="#" class="hover:text-gold-400 transition-colors">Zurich</a>
+        <a href="#" class="hover:text-gold-400 transition-colors">Dubai</a>
+        <a href="#" class="hover:text-gold-400 transition-colors">London</a>
+        <a href="#" class="hover:text-gold-400 transition-colors">Geneva</a>
+      </div>
+
+      <div class="text-slate-500 text-[11px] text-center md:text-right">
+        &copy; 2026 KĀRVĀN Sovereign Guild. By Invitation Only. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic Scripts -->
+  <script>
+    // Initialize Icons
+    lucide.createIcons();
+
+    // Subtle Cursor Tracker
+    const cursor = document.getElementById('cursor-glow');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    // MULTI-CURRENCY CONVERSION SYSTEM
+    let selected_currency = "USD";
+    const EXCHANGE_RATES = {
+      USD: { rate: 1.0, symbol: "$", suffix: "" },
+      EUR: { rate: 0.92, symbol: "€", suffix: "" },
+      AED: { rate: 3.67, symbol: "AED ", suffix: "" },
+      GBP: { rate: 0.78, symbol: "£", suffix: "" },
+      XAU: { rate: 0.00041, symbol: "", suffix: " oz Gold" }
+    };
+
+    function changeCurrency(curr) {
+      selected_currency = curr;
+      const rateObj = EXCHANGE_RATES[curr] || EXCHANGE_RATES.USD;
+      
+      const formatVal = (usdVal) => {
+        const converted = usdVal * rateObj.rate;
+        if (curr === 'XAU') return `${converted.toFixed(2)}${rateObj.suffix}`;
+        return `${rateObj.symbol}${Math.round(converted).toLocaleString()}`;
+      };
+
+      document.getElementById('price-tier-1').innerHTML = `${formatVal(5000)}<span class="text-xs text-slate-400 tracking-widest uppercase font-sans"> / year</span>`;
+      document.getElementById('price-tier-2').innerHTML = `${formatVal(15000)}<span class="text-xs text-slate-400 tracking-widest uppercase font-sans"> / year</span>`;
+      document.getElementById('price-tier-3').innerHTML = `${formatVal(50000)}<span class="text-xs text-slate-400 tracking-widest uppercase font-sans"> / year</span>`;
+    }
+
+    // LIVE MARKET STATS FETCHER
+    async function fetchMarketStats() {
+      try {
+        const res = await fetch('/api/market/stats');
+        const data = await res.json();
+        if (data.assets) {
+          const grid = document.getElementById('market-cards-grid');
+          grid.innerHTML = data.assets.map(a => `
+            <div class="p-4 rounded-2xl bg-surface/70 border border-white/10 hover:border-gold-500/40 transition-colors">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[10px] uppercase font-bold text-slate-400 font-mono">${a.symbol}</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono">${a.change_24h}</span>
+              </div>
+              <div class="text-xs font-medium text-white truncate mb-2">${a.name}</div>
+              <div class="text-xl font-serif font-black text-gold-400">$${a.price_usd.toLocaleString()}</div>
+            </div>
+          `).join('');
+          document.getElementById('guild-volume-display').innerText = data.total_guild_volume_24h;
+        }
+      } catch (err) {
+        console.error('Market stats fetch error:', err);
+      }
+    }
+    fetchMarketStats();
+    setInterval(fetchMarketStats, 8000);
+
+    // AI CONCIERGE DRAWER & CHAT SYSTEM
+    function toggleConciergeDrawer() {
+      const drawer = document.getElementById('concierge-drawer');
+      drawer.classList.toggle('hidden');
+      lucide.createIcons();
+    }
+
+    function sendQuickPrompt(text) {
+      document.getElementById('concierge-input').value = text;
+      handleConciergeSend(new Event('submit'));
+    }
+
+    async function handleConciergeSend(e) {
+      e.preventDefault();
+      const input = document.getElementById('concierge-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const container = document.getElementById('concierge-messages');
+      // Append user bubble
+      container.innerHTML += `
+        <div class="flex items-start justify-end gap-2.5">
+          <div class="p-3 rounded-2xl rounded-tr-none bg-gold-500 text-noir font-medium">
+            ${query}
+          </div>
+        </div>
+      `;
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      // Loading bubble
+      const loadingId = 'loading-' + Date.now();
+      container.innerHTML += `
+        <div id="${loadingId}" class="flex items-start gap-2.5">
+          <div class="w-6 h-6 rounded-full bg-gold-500/20 flex-shrink-0 flex items-center justify-center text-gold-400 font-bold text-[10px]">
+            آ
+          </div>
+          <div class="p-3 rounded-2xl rounded-tl-none bg-surface border border-gold-500/20 text-gold-300 animate-pulse">
+            Consulting Sovereign Dispatch...
+          </div>
+        </div>
+      `;
+      container.scrollTop = container.scrollHeight;
+
+      try {
+        const lang = currentLang;
+        const res = await fetch('/api/concierge/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: query, lang: lang })
+        });
+        const data = await res.json();
+        const el = document.getElementById(loadingId);
+        if (el) el.remove();
+
+        container.innerHTML += `
+          <div class="flex items-start gap-2.5">
+            <div class="w-6 h-6 rounded-full bg-gold-500/20 flex-shrink-0 flex items-center justify-center text-gold-400 font-bold text-[10px]">
+              آ
+            </div>
+            <div class="p-3 rounded-2xl rounded-tl-none bg-surface border border-gold-500/20 text-slate-200">
+              ${data.response || 'Inquiry logged with the High Council.'}
+            </div>
+          </div>
+        `;
+        container.scrollTop = container.scrollHeight;
+      } catch (err) {
+        const el = document.getElementById(loadingId);
+        if (el) el.remove();
+        container.innerHTML += `
+          <div class="flex items-start gap-2.5">
+            <div class="p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400">
+              Network error contacting Concierge desk.
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // AUTHENTICATION LOGIC
+    let authMode = 'login';
+    function openAuthModal(mode) {
+      authMode = mode;
+      const modal = document.getElementById('auth-modal');
+      const nameField = document.getElementById('auth-name-field');
+      const title = document.getElementById('auth-modal-title');
+      const submitBtn = document.getElementById('auth-submit-btn');
+      const switchText = document.getElementById('auth-switch-text');
+      const switchBtn = document.getElementById('auth-switch-btn');
+      const errorMsg = document.getElementById('auth-error-msg');
+
+      errorMsg.classList.add('hidden');
+
+      if (mode === 'register') {
+        nameField.classList.remove('hidden');
+        title.innerText = "Petition For Registry";
+        submitBtn.innerText = "Submit Petition";
+        switchText.innerText = "Already an authenticated Fellow?";
+        switchBtn.innerText = "Authorize Entry";
+      } else {
+        nameField.classList.add('hidden');
+        title.innerText = "Sovereign Portal";
+        submitBtn.innerText = "Authorize Entry";
+        switchText.innerText = "New to the Guild?";
+        switchBtn.innerText = "Petition for Registry";
+      }
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+        modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+      }, 50);
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('auth-modal');
+      modal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
+      modal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    function switchAuthMode() {
+      openAuthModal(authMode === 'login' ? 'register' : 'login');
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      const name = document.getElementById('auth-name').value;
+      const errorMsg = document.getElementById('auth-error-msg');
+
+      const endpoint = authMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+      const payload = authMode === 'register' ? { email, password, name } : { email, password };
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('karvan_token', data.token);
+          localStorage.setItem('karvan_user', JSON.stringify(data.user));
+          closeAuthModal();
+          updateAuthState();
+          
+          confetti({
+            particleCount: 150,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#D4AF37', '#FFF5D0', '#AA820A']
+          });
+        } else {
+          errorMsg.innerText = data.error || 'Authentication error';
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorMsg.innerText = 'Connection failure with server.';
+        errorMsg.classList.remove('hidden');
+      }
+    }
+
+    function updateAuthState() {
+      const token = localStorage.getItem('karvan_token');
+      const userStr = localStorage.getItem('karvan_user');
+
+      const authSec = document.getElementById('nav-auth-section');
+      const userSec = document.getElementById('nav-user-section');
+      const usernameSpan = document.getElementById('nav-username');
+
+      if (token && userStr) {
+        const user = JSON.parse(userStr);
+        authSec.classList.add('hidden');
+        userSec.classList.remove('hidden');
+        usernameSpan.innerText = user.name.split(' ')[0];
+
+        document.getElementById('dash-user-name').innerText = user.name;
+        document.getElementById('dash-user-tier').innerText = user.tier || 'Sovereign Patron';
+        loadMembersDirectory();
+      } else {
+        authSec.classList.remove('hidden');
+        userSec.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('karvan_token');
+      localStorage.removeItem('karvan_user');
+      closeDashboard();
+      updateAuthState();
+    }
+
+    async function loadMembersDirectory() {
+      try {
+        const res = await fetch('/api/members/directory');
+        const data = await res.json();
+        if (data.members) {
+          const list = document.getElementById('members-directory-list');
+          list.innerHTML = data.members.map(m => `
+            <div class="p-3 rounded-xl bg-surface border border-white/5 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-white block">${m.name}</span>
+                <span class="text-[10px] text-slate-400 block">${m.title} • ${m.location}</span>
+              </div>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-gold-500/10 text-gold-400 font-semibold">${m.tier}</span>
+            </div>
+          `).join('');
+        }
+      } catch (err) {}
+    }
+
+    // CHECKOUT LOGIC
+    let current_checkout_tier = '';
+    function checkoutTier(tierName, priceUsd) {
+      const token = localStorage.getItem('karvan_token');
+      if (!token) {
+        openAuthModal('register');
+        return;
+      }
+      current_checkout_tier = tierName;
+      document.getElementById('checkout-tier-title').innerText = `${tierName} Allocation`;
+      document.getElementById('checkout-tier-price').innerText = `$${priceUsd.toLocaleString()} / year`;
+
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+        modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+      }, 50);
+    }
+
+    function closeCheckoutModal() {
+      const modal = document.getElementById('checkout-modal');
+      modal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
+      modal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    function handlePaymentSubmit(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      btn.innerText = "Authorizing Ledger Handshake...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        closeCheckoutModal();
+        btn.innerText = "Transmit Safe Payment";
+        btn.disabled = false;
+
+        const user = JSON.parse(localStorage.getItem('karvan_user'));
+        user.tier = current_checkout_tier;
+        localStorage.setItem('karvan_user', JSON.stringify(user));
+        updateAuthState();
+
+        confetti({
+          particleCount: 200,
+          spread: 100,
+          origin: { y: 0.5 },
+          colors: ['#D4AF37', '#FFF5D0', '#AA820A']
+        });
+        openDashboard();
+      }, 1500);
+    }
+
+    function openDashboard() {
+      document.getElementById('dashboard-modal').classList.remove('hidden');
+    }
+    function closeDashboard() {
+      document.getElementById('dashboard-modal').classList.add('hidden');
+    }
+
+    function handleInquirySubmit(e) {
+      e.preventDefault();
+      document.getElementById('inquiry-form').classList.add('hidden');
+      document.getElementById('inquiry-success').classList.remove('hidden');
+    }
+
+    // BILINGUAL TRANSLATION SYSTEM
+    let currentLang = 'en';
+    const TRANSLATIONS = {
+      en: {
+        announcement: "Exclusive Autumn Gala • Geneva • Private Members Only",
+        announcement_cta: "View Plans →",
+        sub_brand: "Sovereign Elite Persian Network",
+        nav_market: "Live Market",
+        nav_heritage: "Heritage",
+        nav_circles: "Private Circles",
+        nav_pricing: "Pricing",
+        nav_concierge: "Concierge Desk",
+        nav_contact: "Contact Us",
+        hero_badge: "The Sovereign Persian Guild",
+        hero_title: "Where Millennia of Splendor Converge.",
+        hero_desc: "A borderless, invite-only sanctuary uniting the global Persian elite, titans of industry, royal stewards, and masters of civilization.",
+        hero_cta_primary: "Petition for Admission",
+        hero_cta_concierge: "Speak with Concierge",
+        stat_1: "Syndicated Assets",
+        stat_2: "Sovereign Fellows",
+        stat_3: "Global Hubs",
+        stat_4: "Imperial Lineage"
+      },
+      fa: {
+        announcement: "گالای اختصاصی پارسه • ژنو • ویژه اعضای برگزیده",
+        announcement_cta: "مشاهده سطوح ←",
+        sub_brand: "شبکه نخبگان و اصالت پارسی",
+        nav_market: "شاخص بازار",
+        nav_heritage: "میراث کهن",
+        nav_circles: "محافل خصوصی",
+        nav_pricing: "سطوح عضویت",
+        nav_concierge: "میز تشریفات",
+        nav_contact: "تماس دیپلماتیک",
+        hero_badge: "شبکه نخبگان و اصالت پارسی",
+        hero_title: "میعادگاه شکوه ۲۵۰۰ ساله تمدن و رهبری.",
+        hero_desc: "محفلی فرامرزی و اختصاصی برای گردهمایی نخبگان جهانی، سرآمدان صنعت و حافظان اصالت و ثروت پایدار پارسی.",
+        hero_cta_primary: "درخواست بررسی عضویت",
+        hero_cta_concierge: "گفتگو با میز تشریفات",
+        stat_1: "سرمایه‌های تحت مدیریت",
+        stat_2: "اعضای برگزیده",
+        stat_3: "پایگاه‌های بین‌المللی",
+        stat_4: "قدمت تمدنی"
+      }
+    };
+
+    document.getElementById('lang-toggle-btn').addEventListener('click', () => {
+      currentLang = currentLang === 'en' ? 'fa' : 'en';
+      document.getElementById('lang-toggle-btn').innerText = currentLang === 'en' ? 'FA' : 'EN';
+      document.documentElement.dir = currentLang === 'fa' ? 'rtl' : 'ltr';
+      document.documentElement.lang = currentLang;
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (TRANSLATIONS[currentLang][key]) {
+          el.innerText = TRANSLATIONS[currentLang][key];
+        }
+      });
+    });
+
+    // 3D Three.js Golden Particle Nebula Animation
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 30;
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    const particleCount = 1200;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    for(let i=0; i<particleCount*3; i++) {
+      positions[i] = (Math.random() - 0.5) * 80;
+    }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+      color: 0xD4AF37,
+      size: 0.18,
+      transparent: true,
+      opacity: 0.65
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      particles.rotation.y += 0.0008;
+      particles.rotation.x += 0.0004;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Count-up stats observer
+    const statsSection = document.getElementById('stats-section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('[data-target]').forEach(el => {
+            const target = parseFloat(el.getAttribute('data-target'));
+            const suffix = el.getAttribute('data-suffix') || '';
+            const decimals = target % 1 !== 0;
+            let current = 0;
+            const step = target / 40;
+            const interval = setInterval(() => {
+              current += step;
+              if (current >= target) {
+                current = target;
+                clearInterval(interval);
+              }
+              el.innerText = decimals 
+                ? `$${current.toFixed(1)}${suffix}`
+                : `${Math.round(current).toLocaleString()}${suffix}`;
+            }, 30);
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    observer.observe(statsSection);
+
+    // Initial Auth State Update
+    updateAuthState();
+  </script>
+</body>
+</html>
