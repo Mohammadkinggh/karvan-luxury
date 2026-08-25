@@ -10,7 +10,7 @@ import json
 import re
 import os
 
-SITE_DIR = "/storage/emulated/0/HERMES/sites/karvan_website"
+SITE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HTML_PATH = os.path.join(SITE_DIR, "index.html")
 MANIFEST_PATH = os.path.join(SITE_DIR, "manifest.json")
 SW_PATH = os.path.join(SITE_DIR, "sw.js")
